@@ -82,7 +82,7 @@ exports.handler = async (event, context) => {
             });
     }
 
-    // Récupération des information du produit
+    // Récupération des informations du produit
     return client.query(
         q.Paginate(
             q.Match(
