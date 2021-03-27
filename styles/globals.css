@@ -1,0 +1,19 @@
+@import url('https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans&display=swap');
+
+body {
+    font-family: 'Kumbh Sans', sans-serif;
+}
+
+.processing {
+    overflow: hidden;
+    height: 100vh;
+}
+
+.processing #content {
+    filter: blur(4px);
+}
+
+.processing .loading {
+    display: flex;
+}

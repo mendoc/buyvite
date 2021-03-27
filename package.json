@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Système de paiement rapide d'articles numériques",
   "scripts": {
-    "serve": "netlify-lambda serve funcs -c webpack.functions.js",
+    "dev": "next dev",
+    "funcs": "netlify-lambda serve funcs -c webpack.functions.js",
     "build": "netlify-lambda build funcs -c webpack.functions.js"
   },
   "repository": {
@@ -25,6 +26,10 @@
     "axios": "^0.20.0",
     "dotenv": "^8.2.0",
     "faunadb": "^3.0.1",
+    "mongodb": "^3.6.5",
+    "next": "^10.0.9",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "xml-js": "^1.6.11"
   }
 }
