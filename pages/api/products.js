@@ -6,16 +6,18 @@ export default function handler(req, res) {
 
     client.connect(err => {
 
-        if (req.method === 'POST') {
+        if (req.method === 'GET') {
             if (err) res.status(500).json({ message: 'Impossible de se connecter à la base de données' });
+
+            let email = req.query.email;
 
             const db = client.db(dbName);
 
-            getProducts(db, (err, products) => {
+            getProducts(db, email, (err, data) => {
 
                 if (err) res.status(500).json({ message: 'Impossible de récupérer les produits' });
 
-                res.status(200).json({ products });
+                res.status(200).json({ data });
 
                 client.close();
             })
@@ -25,10 +27,10 @@ export default function handler(req, res) {
     });
 }
 
-function getProducts(db, cb) {
+function getProducts(db, email, cb) {
     const collection = db.collection("products");
 
-    collection.find().toArray((err, products) => {
+    collection.find({ user: email }).toArray((err, products) => {
         cb(err, products);
     });
 }

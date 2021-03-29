@@ -1,36 +1,45 @@
 import jwt_decode from "jwt-decode";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { getProducts } from "../../utils/Request";
 
 export default function User() {
+    const [user, setUser] = useState({});
     const [cookies, setCookie] = useCookies(['token']);
     const router = useRouter();
 
     useEffect(() => {
         if (!cookies.token) {
             router.push('/')
+        } else {
+            const infos = jwt_decode(cookies.token);
+            setUser(infos);
+            getProducts(infos.email, (err, data) => {
+                console.log(data)
+            })
         }
-    })
+    }, [])
 
     if (!cookies.token) return null;
-
-    const userinfos = jwt_decode(cookies.token);
 
     return (
         <div className="px-10">
             <div className="flex justify-between items-center my-3">
                 <span>BuyVite</span>
                 <div className="flex items-center">
-                    <img className="w-10 rounded-full mr-3" src={userinfos.picture} />
-                    <span>{userinfos.name}</span>
+                    <img className="w-10 rounded-full mr-3" src={user.picture} />
+                    <span>{user.name}</span>
                 </div>
             </div>
             <hr />
             <div className="mt-5">
                 <div className="flex justify-between items-center">
                     <h2>Vos produits</h2>
-                    <button className="py-1 px-2 rounded text-white bg-blue-900">Créer un lien</button>
+                    <Link href="/create">
+                        <button className="py-1 px-2 rounded text-white bg-blue-900">Créer un lien</button>
+                    </Link>
                 </div>
                 <div className="flex mt-5">
                     <div className="flex border p-2 rounded">

@@ -25,7 +25,7 @@ export default function Home() {
             <p>Connectez-vous à votre compte pour créer des liens de ventes de produits</p>
             <GoogleLogin
                 clientId='143259310420-lb0ljkai2d166ofkj269ol6spnon5idg.apps.googleusercontent.com'
-                buttonText="Login"
+                buttonText="Connectez-vous"
                 onSuccess={handleSuccess}
                 onFailure={responseGoogle}
                 cookiePolicy={'single_host_origin'}

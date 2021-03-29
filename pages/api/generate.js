@@ -9,13 +9,16 @@ export default function handler(req, res) {
         if (req.method === 'POST') {
             if (err) res.status(500).json({ message: 'Impossible de se connecter à la base de données' });
 
+            let product = JSON.parse(req.body);
+            product.createdAt = Date.now();
+
             const db = client.db(dbName);
 
-            getProducts(db, (err, products) => {
+            createProduct(db, product, (err, data) => {
 
-                if (err) res.status(500).json({ message: 'Impossible de récupérer les produits' });
+                if (err) res.status(500).json({ message: 'Impossible de créer le produit' });
 
-                res.status(200).json({ products });
+                res.status(200).json({ data });
 
                 client.close();
             })
@@ -25,10 +28,10 @@ export default function handler(req, res) {
     });
 }
 
-function getProducts(db, cb) {
+function createProduct(db, product, cb) {
     const collection = db.collection("products");
 
-    collection.find().toArray((err, products) => {
-        cb(err, products);
+    collection.insertOne(product, (err, data) => {
+        cb(err, data);
     });
 }
