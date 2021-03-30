@@ -9,27 +9,41 @@ export default function handler(req, res) {
 
         if (req.method === 'POST') {
             if (err) {
+                //client.close();
                 res.status(500).json({ message: 'Impossible de se connecter à la base de données' });
+                res.end();
                 return;
             }
 
             let infos = JSON.parse(req.body);
 
+            if (!infos) {
+                //client.close();
+                res.status(401).json({ message: 'Veuillez renseigner les informations du compte' });
+                res.end();
+                return;
+            }
+
             const db = client.db(dbName);
 
             getUser(db, infos, (err, data) => {
 
+                //client.close();
+
                 if (err) {
                     res.status(500).json({ message: 'Impossible de récupérer les informations du compte' });
+                    res.end();
                     return;
                 }
 
-                res.status(200).json({ data });
-
-                client.close();
+                res.status(200).json(data);
+                res.end();
             })
         } else {
-            res.status(404).json({ message: 'Requête introuvable' });
+            //client.close();
+
+            res.status(405).json({ message: 'Requête introuvable' });
+            res.end();
         }
     });
 }

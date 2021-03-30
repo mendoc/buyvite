@@ -1,36 +1,31 @@
 {
   "name": "buyvite",
   "version": "1.0.0",
-  "description": "Système de paiement rapide d'articles numériques",
+  "description": "Plateforme de vente rapide de produits",
   "scripts": {
     "dev": "next dev",
-    "funcs": "netlify-lambda serve funcs -c webpack.functions.js",
     "build": "next build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/dimitriongoua/badol-functions.git"
+    "url": "git+https://github.com/mendoc/buyvite.git"
   },
   "keywords": [
-    "Netlify",
-    "functions"
+    "BuyVite",
+    "Nextjs"
   ],
   "author": "Dimitri ONGOUA",
   "license": "MIT",
-  "homepage": "https://gitlab.com/dimitriongoua/badol-functions#readme",
-  "devDependencies": {
-    "netlify-lambda": "^2.0.1",
-    "webpack-node-externals": "^2.5.1"
-  },
+  "homepage": "https://buyvite.netlify.app",
   "dependencies": {
     "axios": "^0.20.0",
-    "dotenv": "^8.2.0",
     "faunadb": "^3.0.1",
     "jwt-decode": "^3.1.2",
     "mongodb": "^3.6.5",
     "next": "^10.0.9",
     "react": "^17.0.2",
     "react-cookie": "^4.0.3",
+    "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
     "uuid": "^8.3.2",

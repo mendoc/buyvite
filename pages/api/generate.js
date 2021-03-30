@@ -9,13 +9,16 @@ export default function handler(req, res) {
         if (req.method === 'POST') {
             if (err) res.status(500).json({ message: 'Impossible de se connecter à la base de données' });
 
+            const today = new Date();
             let product = JSON.parse(req.body);
-            product.createdAt = Date.now();
+            product.createdAt = today.getTime();
+            product.reference = `R${today.getFullYear()}${today.getMilliseconds()}${Math.floor(Math.random()*1000)}`;
+            
             const db = client.db(dbName);
 
             createProduct(db, product, (err, data) => {
 
-                client.close();
+                //client.close();
 
                 if (err) {
                     res.status(500).json({ message: 'Impossible de créer le produit' });

@@ -29,7 +29,8 @@ export default function Create() {
             setProcessing(false);
             if (err) console.dir(err);
             else {
-                location.href = `/user/${res.user}`;
+                // location.href = `/user/${res.user}`;
+                router.push(`/user/${res.user}`);
             }
         })
     }

@@ -76,7 +76,6 @@ const getUserInfos = (infos, cb) => {
                     cb(null, data);
                 });
             } else {
-                console.log(response);
                 cb('Mauvaise réponse du réseau');
             }
         })
