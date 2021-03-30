@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GoogleLogin } from 'react-google-login';
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
+import { getUserInfos } from "../utils/Request";
 
 export default function Home() {
 
@@ -16,7 +17,17 @@ export default function Home() {
     const handleSuccess = (response) => {
         console.log(response);
         setCookie('token', response.tokenObj.id_token, { expires: new Date(response.tokenObj.expires_at) });
-        router.push('/user');
+        const infos = {
+            email: response.profileObj.email,
+            photo: response.profileObj.imageUrl,
+            name: response.profileObj.name,
+        }
+        getUserInfos(infos, ((err, res) => {
+            if (err) console.dir(err);
+            else {
+                location.href = `/user/${res.data.uuid}`;
+            }
+        }));
     }
 
     return (

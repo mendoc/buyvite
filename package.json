@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "funcs": "netlify-lambda serve funcs -c webpack.functions.js",
-    "build": "netlify-lambda build funcs -c webpack.functions.js"
+    "build": "next build"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "react-cookie": "^4.0.3",
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
+    "uuid": "^8.3.2",
     "xml-js": "^1.6.11"
   }
 }

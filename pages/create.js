@@ -23,15 +23,13 @@ export default function Create() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(product);
         setProcessing(true);
 
         generateLink(product, (err, res) => {
             setProcessing(false);
             if (err) console.dir(err);
             else {
-                console.log(res);
-                router.push('/user')
+                location.href = `/user/${res.user}`;
             }
         })
     }

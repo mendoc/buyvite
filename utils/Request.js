@@ -62,6 +62,31 @@ const generateLink = (product, cb) => {
         });
 }
 
+
+const getUserInfos = (infos, cb) => {
+
+    fetch(`/api/user`,
+        {
+            method: "POST",
+            body: JSON.stringify(infos)
+        })
+        .then((response) => {
+            if (response.ok) {
+                response.json().then((data) => {
+                    cb(null, data);
+                });
+            } else {
+                console.log(response);
+                cb('Mauvaise réponse du réseau');
+            }
+        })
+        .catch((error) => {
+            cb(error.message);
+        });
+}
+
+
 exports.payProduct = payProduct;
 exports.generateLink = generateLink;
 exports.getProducts = getProducts;
+exports.getUserInfos = getUserInfos;

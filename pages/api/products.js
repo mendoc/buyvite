@@ -7,7 +7,10 @@ export default function handler(req, res) {
     client.connect(err => {
 
         if (req.method === 'GET') {
-            if (err) res.status(500).json({ message: 'Impossible de se connecter à la base de données' });
+            if (err) {
+                res.status(500).json({ message: 'Impossible de se connecter à la base de données' });
+                return;
+            }
 
             let email = req.query.email;
 
@@ -15,7 +18,10 @@ export default function handler(req, res) {
 
             getProducts(db, email, (err, data) => {
 
-                if (err) res.status(500).json({ message: 'Impossible de récupérer les produits' });
+                if (err) {
+                    res.status(500).json({ message: 'Impossible de récupérer les produits' });
+                    return;
+                }
 
                 res.status(200).json({ data });
 
