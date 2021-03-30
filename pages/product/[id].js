@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { payProduct } from '../utils/Request';
+import { payProduct } from '../../utils/Request';
 
 export default function Home() {
 
