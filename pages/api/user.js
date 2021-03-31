@@ -33,14 +33,19 @@ export default function handler(req, res) {
 
 async function getUser(infos, cb) {
 
-    const citiesRef = db.collection('users');
-    const snapshot = await citiesRef.where('email', '==', infos.email).limit(1).get();
-    if (snapshot.empty) {
-        await db.collection('users').add(infos);
-        cb(null, infos.uuid);
-    } else {
-        snapshot.forEach(doc => {
-            cb(null, doc.data().uuid);
-        })
+    try {
+        const citiesRef = db.collection('users');
+        const snapshot = await citiesRef.where('email', '==', infos.email).limit(1).get();
+        if (snapshot.empty) {
+            await db.collection('users').add(infos);
+            cb(null, infos.uuid);
+        } else {
+            snapshot.forEach(doc => {
+                cb(null, doc.data().uuid);
+            })
+        }
+    } catch (err) {
+        console.error(err);
     }
+
 }
