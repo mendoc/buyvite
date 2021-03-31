@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { payProduct } from '../../utils/Request';
-import { client } from '../../utils/DB';
+import { db } from '../../utils/DB';
 import Head from "next/head";
 
 export default function Product({ product }) {
+
+    if (!product) return <h1>Produit Introuvable</h1>;
 
     const [processing, setProcessing] = useState(false);
     const [numero, setNumero] = useState('');
@@ -33,7 +35,7 @@ export default function Product({ product }) {
                 <meta property="og:title" content={product.name} />
                 <meta property="og:site_name" content="BuyVite" />
                 <meta property="og:url" content={`https://buyvite.netlify.app/product/${product.reference}`} />
-                <meta property="og:description" content={`Acheter le produit ${product.name} sur BuyVite à ${price} F CFA`} />
+                <meta property="og:description" content={`${price} F CFA | Cliquez ici pour acheter le produit.`} />
                 <meta property="og:image" content={product.image} />
                 <meta property="og:type" content="article" />
 
@@ -70,19 +72,16 @@ export default function Product({ product }) {
 }
 
 export async function getServerSideProps({ params }) {
-    const dbName = process.env.DB_NAME;
     const reference = params.reference;
     let product = {};
 
-    try {
-        await client.connect();
-        const database = client.db(dbName);
-        const collection = database.collection('products');
-        product = await collection.findOne({ reference: reference });
-        delete product._id;
-    } catch (err) {
-        console.log(err);
-        await client.close();
+    const collection = db.collection('products');
+    const snapshot = await collection.where('reference', '==', reference).limit(1).get();
+
+    if (!snapshot.empty) {
+        snapshot.forEach(doc => {
+            product = doc.data();
+        })
     }
 
     return {
