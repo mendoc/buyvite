@@ -72,11 +72,12 @@ const getUserInfos = (infos, cb) => {
         })
         .then((response) => {
             if (response.ok) {
+                console.log(response);
                 response.json().then((data) => {
                     cb(null, data);
                 });
             } else {
-                cb('Mauvaise réponse du réseau');
+                cb(response);
             }
         })
         .catch((error) => {

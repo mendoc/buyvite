@@ -25,7 +25,7 @@ export default function User({ products }) {
     return (
         <main className="px-10">
             <div className="flex justify-between items-center my-3">
-                <span>BuyVite</span>
+                <span><Link href="/">BuyVite</Link></span>
                 <div className="flex items-center">
                     <img className="w-10 rounded-full mr-3" src={user.picture} />
                     <span>{user.name}</span>
