@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { client } from '../../utils/DB'
+import { db } from '../../utils/DB'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 export default function User({ products }) {
@@ -43,7 +43,7 @@ export default function User({ products }) {
                     {products && products.map((prod) => {
                         const lien = `https://buyvite.netlify.app/product/${prod.reference}`;
                         return (
-                            <div key={prod._id} className="flex border p-2 mr-3 mt-3 rounded max-w-sm">
+                            <div key={prod.reference} className="flex border p-2 mr-3 mt-3 rounded max-w-sm">
                                 <img className="h-20 mr-3" src={prod.image} />
                                 <div className="flex flex-col justify-between items-center">
                                     <span>{prod.name}</span>
@@ -69,23 +69,15 @@ export default function User({ products }) {
 }
 
 export async function getServerSideProps({ params }) {
-    const dbName = process.env.DB_NAME;
     const uuid = params.uuid;
     let products = [];
 
-    try {
-        await client.connect();
-        const database = client.db(dbName);
-        const collection = database.collection('products');
-        const cursor = collection.find({ user: uuid }, { user: 1, _id: 0 });
-        for await (let doc of cursor) {
-            console.log(doc);
-            doc._id = `${doc._id}`;
-            products.push({ ...doc });
-        }
-    } catch (err) {
-        console.log(err);
-        await client.close();
+    const collection = db.collection('products');
+    const snapshot = await collection.where('user', '==', uuid).get();
+    if (!snapshot.empty) {
+        snapshot.forEach(doc => {
+            products.push(doc.data());
+        });
     }
 
     return {
