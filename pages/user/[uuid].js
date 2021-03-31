@@ -34,7 +34,7 @@ export default function User({ products }) {
             <hr />
             <div className="mt-5">
                 <div className="flex justify-between items-center">
-                    <h2>Vos produits</h2>
+                    <h2>Vos produits ({products.length})</h2>
                     <Link href="/create">
                         <button className="py-1 px-2 rounded text-white bg-blue-900">Créer un lien</button>
                     </Link>

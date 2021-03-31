@@ -1,12 +1,14 @@
 import React from "react";
 import { GoogleLogin } from 'react-google-login';
 import { useCookies } from "react-cookie";
+import { useRouter } from "next/router";
 import { getUserInfos } from "../utils/Request";
 import Head from "next/head";
 
 export default function Home() {
 
     const [cookies, setCookie] = useCookies(['token']);
+    const router = useRouter();
 
     const handleFailure = (response) => {
         console.log(response);
@@ -22,7 +24,7 @@ export default function Home() {
         getUserInfos(infos, ((err, res) => {
             if (err) console.dir(err);
             else {
-                location.href = `/user/${res.uuid}`;
+                if (res.uuid) router.push(`/user/${res.uuid}`);
             }
         }));
     }
@@ -39,7 +41,7 @@ export default function Home() {
                 <meta property="og:description" content="Plateforme de vente rapide de produits" />
                 <meta property="og:type" content="website" />
 
-                <title>Buy Vite</title>
+                <title>BuyVite</title>
             </Head>
             <div className="flex p-16 text-center h-screen flex-col justify-center items-center">
                 <h1 className="font-bold text-2xl">BuyVite</h1>
