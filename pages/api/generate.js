@@ -1,56 +1,33 @@
-import { client } from '../../utils/DB'
+import { db } from '../../utils/DB'
 
-const dbName = process.env.DB_NAME;
+export default async function handler(req, res) {
 
-export default function handler(req, res) {
+    if (req.method === 'POST') {
 
-    client.connect(err => {
+        const today = new Date();
+        let product = JSON.parse(req.body);
+        product.createdAt = today.getTime();
+        product.reference = `R${today.getFullYear()}${today.getMilliseconds()}${Math.floor(Math.random() * 1000)}`;
 
-        if (req.method === 'POST') {
-            if (err) res.status(500).json({ message: 'Impossible de se connecter à la base de données' });
+        const usersCollection = db.collection('users');
+        const userSnapshot = await usersCollection.where('email', '==', product.user).limit(1).get();
 
-            const today = new Date();
-            let product = JSON.parse(req.body);
-            product.createdAt = today.getTime();
-            product.reference = `R${today.getFullYear()}${today.getMilliseconds()}${Math.floor(Math.random()*1000)}`;
-            
-            const db = client.db(dbName);
-
-            createProduct(db, product, (err, data) => {
-
-                //client.close();
-
-                if (err) {
-                    res.status(500).json({ message: 'Impossible de créer le produit' });
-                    res.end();
-                } else {
-                    res.status(200).json({ ...data });
-                    res.end();
-                }
-            })
+        if (userSnapshot.empty) {
+            res.status(500).json({ message: 'Impossible de créer le produit' });
         } else {
-            res.status(404).json({ message: 'Requête introuvable' });
-            res.end();
-        }
-    });
-}
-
-function createProduct(db, product, cb) {
-    const usersCol = db.collection("users");
-    const collection = db.collection("products");
-
-    usersCol.findOne({ email: product.user }, (err, data) => {
-        console.log('user', data)
-        if (data) {
-            product.user = data.uuid;
-            collection.insertOne(product, (err, data) => {
-                console.log('data', data)
-                cb(null, data.ops[0]);
+            userSnapshot.forEach(doc => {
+                product.user = doc.data().uuid;
             });
-        } else {
-            console.log('error', err)
-            cb(err);
+            
+            const ret = await db.collection('products').add(product);
+            if (ret.id) {
+                res.status(200).json(product);
+            } else {
+                res.status(500).json({ message: 'Impossible de créer le produit' });
+            }
         }
-    });
-
+    } else {
+        res.status(404).json({ message: 'Requête introuvable' });
+        res.end();
+    }
 }
