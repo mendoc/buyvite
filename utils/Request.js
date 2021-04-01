@@ -1,26 +1,23 @@
-const payProduct = (numero, produit, cb) => {
-
-    let product = {
-        numero: numero,
-        produit: produit
-    }
+const payProduct = (number, product, cb) => {
 
     fetch(`/api/pay`,
         {
             method: "POST",
-            body: JSON.stringify(product)
+            body: JSON.stringify({ number, product })
         })
         .then((response) => {
-            if (response.ok) {
-                response.json().then((data) => {
+            response.json().then((data) => {
+                if (response.ok) {
                     cb(null, data);
-                });
-            } else {
-                cb('Mauvaise réponse du réseau');
-            }
+                } else {
+                    cb(data);
+                }
+            }).catch(() => {
+                cb({ message: 'Zut! Impossible de traiter la requête pour le moment' });
+            });
         })
         .catch((error) => {
-            cb(error.message);
+            cb(error);
         });
 }
 

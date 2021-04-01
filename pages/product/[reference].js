@@ -8,19 +8,29 @@ export default function Product({ product }) {
     if (!product) return <h1>Produit Introuvable</h1>;
 
     const [processing, setProcessing] = useState(false);
+    const [success, setSuccess] = useState(false);
     const [numero, setNumero] = useState('');
+    const [message, setMessage] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setMessage('');
         setProcessing(true);
         payProduct(numero, product.reference, (err, res) => {
             setProcessing(false);
-            if (err) console.dir(err);
-            else console.log(res);
+            if (err) {
+                console.dir(err);
+                setMessage(err.message);
+            } else {
+                setSuccess(true);
+                setMessage('');
+                console.log(res);
+            }
         });
     }
 
     const handleChange = (e) => {
+        setMessage('');
         setNumero(e.target.value);
     }
 
@@ -57,13 +67,21 @@ export default function Product({ product }) {
                         <span className="inline-block pt-2 pb-1 px-2 text-lg font-bold bg-gray-400 rounded my-4">{parseInt(product.price).toLocaleString('fr-FR')} F CFA</span>
                         <h1 className="font-bold text-2xl">{product.name}</h1>
                         <p className="my-5">{product.description}</p>
-                        <form className="border-t pt-4" onSubmit={handleSubmit}>
-                            <h2 className="font-bold mb-2">Payer via Airtel Money</h2>
-                            <label htmlFor="numero">Votre numéro</label>
-                            <input className="w-full border outline-none py-2 px-1" type="tel" value={numero} onChange={handleChange} name="numero"
-                                placeholder="ex: 074123456" required spellCheck={false} />
-                            <input className="rounded py-3 text-lg font-bold mt-4 text-white w-full bg-green-500" type="submit" value="Acheter" />
-                        </form>
+                        {
+                            success ? <div className="border-t pt-4">
+                                <h2 className="font-bold text-orange-600 mb-2">Paiement initié</h2>
+                                <p>Veuillez consulter votre téléphone pour renseigner votre mot de passe.</p>
+                            </div>
+                                :
+                                <form className="border-t pt-4" onSubmit={handleSubmit}>
+                                    <h2 className="font-bold mb-2">Payer via Airtel Money</h2>
+                                    <label htmlFor="numero">Votre numéro</label>
+                                    <input className="w-full border outline-none py-2 px-1" type="tel" value={numero} onChange={handleChange} name="number"
+                                        placeholder="ex: 074123456" required spellCheck={false} autoComplete="off" />
+                                    {message && <p className="mt-2 text-red-700 bg-red-200 rounded px-2 py-1 font-bold italic">{message}</p>}
+                                    <input className="rounded py-3 text-lg font-bold mt-4 text-white w-full bg-green-500" type="submit" value="Acheter" />
+                                </form>
+                        }
                     </main>
                 </div>
             </div>

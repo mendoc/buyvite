@@ -19,7 +19,7 @@
   "license": "MIT",
   "homepage": "https://buyvite.netlify.app",
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "firebase-admin": "^9.6.0",
     "jwt-decode": "^3.1.2",
     "mongodb": "^3.6.5",

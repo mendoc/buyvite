@@ -1,34 +1,90 @@
-import { client } from '../../utils/DB'
+import { db } from '../../utils/DB';
+import querystring from 'querystring';
+import axios from 'axios';
+import convert from 'xml-js';
 
-const dbName = process.env.DB_NAME;
+export default async function handler(req, res) {
 
-export default function handler(req, res) {
+    if (req.method !== 'POST') {
+        res.status(401).json({ message: 'Requête non autorisée' });
+        return;
+    }
 
-    client.connect(err => {
+    // Recuperation de la reference du produit et du numero de telephone
+    const infos = JSON.parse(req.body);
 
-        if (req.method === 'POST') {
-            if (err) res.status(500).json({ message: 'Impossible de se connecter à la base de données' });
+    // On verifie que les infos sont fournies
+    if (!infos || !infos.number || !infos.product) {
+        res.status(400).json({ message: 'Veuillez renseigner toutes les informations' });
+        return;
+    }
 
-            const db = client.db(dbName);
+    const number = infos.number;
 
-            getProducts(db, (err, products) => {
+    // On verifie si c'est un numero Airtel
+    if (!number || number.length != 9 || !number.startsWith('07') || !(/([0-9]){9}/).test(number)) {
+        res.status(400).json({ message: 'Numéro de téléphone incorrect' });
+        return;
+    }
 
-                if (err) res.status(500).json({ message: 'Impossible de récupérer les produits' });
+    // On recupere le produit
+    const snapshot = await db.collection('products').where('reference', '==', infos.product).limit(1).get();
 
-                res.status(200).json({ products });
+    if (snapshot.empty) {
+        res.status(400).json({ message: 'Produit introuvable' });
+        return;
+    }
 
-                client.close();
-            })
-        } else {
-            res.status(404).json({ message: 'Requête introuvable' });
-        }
-    });
-}
+    const product = snapshot.docs[0].data();
+    const price = product.price;
 
-function getProducts(db, cb) {
-    const collection = db.collection("products");
+    // On cree un document pour le paiement
+    const today = new Date();
+    const payment = {
+        number: number,
+        product: product.reference,
+        price: price,
+        state: 'init',
+        reference: `P${today.getFullYear()}${today.getMilliseconds()}${Math.floor(Math.random() * 1000)}`,
+        created: today.getTime()
+    }
+    const docPayment = await db.collection('payments').add(payment);
 
-    collection.find().toArray((err, products) => {
-        cb(err, products);
-    });
+    if (!docPayment.id) {
+        res.status(500).json({ message: 'Impossible d\'enregistrer le paiement' });
+        return;
+    }
+
+    // Preparation des informations a soumettre a PVit
+    const params = {
+        tel_marchand: process.env.PVIT_TEL_MARCHAND,
+        montant: price,
+        ref: payment.reference,
+        tel_client: number,
+        token: process.env.PVIT_TOKEN,
+        action: 1,
+        service: 'REST',
+        operateur: 'AM',
+        agent: 'BuyVite'
+    };
+
+    // On interroge PVit
+    const resPvit = await axios.post(process.env.PVIT_URL, querystring.stringify(params));
+
+    if (resPvit.status !== 200) {
+        res.status(500).json({ message: 'Impossible de procéder au paiement' });
+        return;
+    }
+
+    // La reponse de PVit est en XML :-( on la convertit en JSON :-)
+    const dataPvit = convert.xml2json(resPvit.data, { compact: true, spaces: 4 });
+
+    const infosPvit = JSON.parse(dataPvit);
+
+    if (!infosPvit || !infosPvit.REPONSE) {
+        res.status(500).json({ message: 'Une erreur s\'est produite lors de la tentative de paiement' });
+        return;
+    }
+
+    res.status(200).json({ message: infosPvit.REPONSE.MESSAGE._text, payment: docPayment.id });
 }
