@@ -44,6 +44,7 @@ export default async function handler(req, res) {
         number: number,
         product: product.reference,
         price: price,
+        user: product.user,
         state: 'init',
         reference: `P${today.getFullYear()}${today.getMilliseconds()}${Math.floor(Math.random() * 1000)}`,
         created: today.getTime()
@@ -71,7 +72,7 @@ export default async function handler(req, res) {
     // On interroge PVit
     const resPvit = await axios.post(process.env.PVIT_URL, querystring.stringify(params));
 
-    if (resPvit.status !== 200) {
+    if (!resPvit || resPvit.status !== 200) {
         res.status(500).json({ message: 'Impossible de procéder au paiement' });
         return;
     }

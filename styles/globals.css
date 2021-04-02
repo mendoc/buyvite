@@ -7,6 +7,13 @@ body {
     font-family: 'Kumbh Sans', sans-serif;
 }
 
+body .product {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
 .processing {
     overflow: hidden;
     height: 100vh;
