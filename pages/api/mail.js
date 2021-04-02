@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         return;
     }
 
-    console.log(req.body, process.env.EMAIL_USER, process.env.EMAIL_PASS);
+    console.log('body', req.body);
 
     if (!req.body.address) {
         console.error("Adresse e-mail non renseignée");
@@ -38,7 +38,6 @@ export default async function handler(req, res) {
 
     transporter.sendMail(mailOptions, function (error, info) {
         let message = "";
-        let status = 200;
         if (error) {
             console.log(error);
             message = "Erreur : " + error.response;

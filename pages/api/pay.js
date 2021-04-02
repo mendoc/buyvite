@@ -86,6 +86,6 @@ export default async function handler(req, res) {
         res.status(500).json({ message: 'Une erreur s\'est produite lors de la tentative de paiement' });
         return;
     }
-
+    
     res.status(200).json({ message: infosPvit.REPONSE.MESSAGE._text, payment: docPayment.id });
 }
