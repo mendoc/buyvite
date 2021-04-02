@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
     if (!snapPayment.empty) {
         const refPayment = snapPayment.docs[0].ref;
-        const payment = refPayment.data();
+        const payment = snapPayment.docs[0].data();
         const infosUpdate = {
             updated: Date.now(),
             state: status === '200' ? 'paid' : 'cancel'
