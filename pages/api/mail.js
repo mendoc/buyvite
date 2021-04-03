@@ -41,7 +41,6 @@ export default async function handler(req, res) {
         if (error) {
             console.log(error);
             message = "Erreur : " + error.response;
-            status = 500;
         } else {
             console.log(info);
             message = 'Email envoyé: ' + info.response;
