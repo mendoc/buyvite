@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
         db.collection('users').where('uuid', '==', payment.user).limit(1).get().then(snap => {
             const user = snap.docs[0].data();
-            axios.post(process.env.EMAIL_URL, { address: user.email });
+            axios.post(process.env.EMAIL_URL, { address: user.email }).catch(console.log);
         }).catch(console.log);
     }
 
