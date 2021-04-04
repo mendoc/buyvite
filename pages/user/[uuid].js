@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { db } from '../../utils/DB'
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import ShareButton from '../../components/ShareButton';
 
 export default function User({ products }) {
     const [user, setUser] = useState({});
@@ -23,7 +23,7 @@ export default function User({ products }) {
     if (!cookies.token) return null;
 
     return (
-        <main className="px-10">
+        <main className="md:px-10 px-3">
             <div className="flex justify-between items-center my-3">
                 <span><Link href="/">BuyVite</Link></span>
                 <div className="flex items-center">
@@ -39,24 +39,17 @@ export default function User({ products }) {
                         <button className="py-1 px-2 rounded text-white bg-blue-900">Créer un lien</button>
                     </Link>
                 </div>
-                <div className="flex flex-wrap justify-center my-5">
+                <div className="md:flex flex-wrap justify-start my-5">
                     {products && products.map((prod) => {
                         const lien = `https://buyvite.netlify.app/product/${prod.reference}`;
+                        const price = parseInt(prod.price).toLocaleString('fr-FR');
                         return (
-                            <div key={prod.reference} className="flex border p-2 mr-3 mt-3 rounded max-w-sm">
-                                <img className="h-20 mr-3" src={prod.image} />
-                                <div className="flex flex-col justify-between items-center">
-                                    <span>{prod.name}</span>
-                                    <span className="text-xs break-all text-center text-gray-800"><a href={`${lien}`} target="_blank">{lien}</a></span>
-                                    <CopyToClipboard text={lien} onCopy={() => 'Lien copié'}>
-                                        <span className=" flex items-center text-xs cursor-pointer self-center py-1 px-2 rounded text-white bg-blue-900">
-                                            <svg className="h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-                                                <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
-                                            </svg>
-                                        Copier le lien de vente
-                                    </span>
-                                    </CopyToClipboard>
+                            <div key={prod.reference} className="md:flex flex-col border self-start p-2 md:mr-3 mt-3 rounded max-w-sm">
+                                <span className="mt-3 font-bold text-md">{prod.name}</span>
+                                <img className="rounded w-full h-48 object-cover my-3" src={prod.image} />
+                                <div className="flex flex-col justify-start items-start">
+                                    <span className="font-bold">{price} F CFA</span>
+                                    <ShareButton lien={lien} />
                                 </div>
                             </div>
                         )
