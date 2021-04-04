@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { payProduct } from '../../utils/Request';
 import { db } from '../../utils/DB';
-import fs from '../../utils/firestore';
+import fb from '../../utils/fb';
 import Head from "next/head";
 
 export default function Product({ product }) {
@@ -26,7 +26,7 @@ export default function Product({ product }) {
             } else {
                 setMessage('');
                 if (res.payment) {
-                    fs.collection('payments').doc(res.payment).onSnapshot(snap => {
+                    fb.fs.collection('payments').doc(res.payment).onSnapshot(snap => {
                         setProcessing(false);
                         setState(snap.get('state'));
                     }, err => {
