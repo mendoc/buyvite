@@ -11,6 +11,7 @@ export default function Create() {
     const [processing, setProcessing] = useState(false);
     const [product, setProduct] = useState({});
     const [file, setFile] = useState({});
+    const [preview, setPreview] = useState('');
     const [cookies, setCookie] = useCookies(['token']);
     const router = useRouter();
 
@@ -56,7 +57,15 @@ export default function Create() {
     }
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        let reader = new FileReader();
+        let f = e.target.files[0];
+
+        reader.onloadend = () => {
+            setFile(f);
+            setPreview(reader.result);
+        }
+
+        reader.readAsDataURL(f);
     }
 
     const handleChange = (e) => {
@@ -85,7 +94,10 @@ export default function Create() {
                     </div>
                     <div className="mt-3">
                         <label className="font-bold text-blue-900">Image du produit</label>
-                        <input name="file" onChange={handleFileChange} className="border w-full px-2 py-1 outline-none" type="file" placeholder="Choisissez une image" required />
+                        <div className="flex items-center">
+                            {preview && <img className="w-1/4 mr-3 rounded" src={preview} alt="preview" />}
+                            <input name="file" onChange={handleFileChange} accept="image/*" className="text-blue-900 image-input outline-none" type="file" placeholder="Choisissez une image" required />
+                        </div>
                     </div>
                     <div className="mt-3">
                         <label className="font-bold text-blue-900">Prix du produit</label>
@@ -94,7 +106,7 @@ export default function Create() {
                     <div className="mt-3">
                         <label className="font-bold text-blue-900">Description du produit</label>
                         <textarea name="description" onChange={handleChange} className="border w-full px-2 py-1 outline-none" type="number" placeholder="Ex : Montre fait à base de composants naturels"></textarea>
-                        <span className="text-sm italic text-gray-800">Facultatif</span>
+                        <span className="text-sm italic text-gray-800 -mt-1 block">Facultatif</span>
                     </div>
                     {
                         !processing && <button type="submit" className="flex items-center text-sm cursor-pointer self-center py-1 px-2 mt-3 rounded text-white bg-blue-900">
