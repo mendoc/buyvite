@@ -44,7 +44,7 @@ export default function User({ products }) {
                 </div>
                 <div className="md:flex flex-wrap justify-start my-5">
                     {products && products.map((prod) => {
-                        const lien = `http://localhost:3000/product/${prod.reference}`;
+                        const lien = `${window.location.origin}/product/${prod.reference}`;
                         const price = parseInt(prod.price).toLocaleString('fr-FR');
                         return (
                             <div key={prod.reference} className="md:flex flex-col border self-start p-2 md:mr-3 mt-3 rounded max-w-sm">

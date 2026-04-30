@@ -2,12 +2,12 @@ const axios = require('axios');
 
 class PaymentService {
   constructor() {
-    this.baseUrl = 'https://client.singpay.ga/api/v1'; // Base URL standard SingPay
+    this.baseUrl = 'https://gateway.singpay.ga/v1'; // Base URL standard SingPay
   }
 
   async processPayment(paymentData) {
     try {
-      const response = await axios.post(`https://gateway.singpay.ga/v1/74/paiement`, {
+      const response = await axios.post(`${this.baseUrl}/74/paiement`, {
         amount: paymentData.amount,
         client_msisdn: paymentData.number,
         reference: paymentData.reference,
