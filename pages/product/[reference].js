@@ -122,7 +122,7 @@ export default function Product({ product }) {
             <div className={`${processing ? 'processing' : ''}`}>
                 <div
                     className="loading hidden flex px-5 text-center text-white flex-col justify-center fixed inset-0 z-50 bg-black bg-opacity-75">
-                    <Image className="w-16 self-center" src="/assets/img/load.gif" alt="Image de chargement" width={64} height={64} />
+                    <img className="w-16 self-center" src="/assets/img/load.gif" alt="Image de chargement." width={64} height={64} unoptimized />
                     <span>Traitement en cours <br /> Veuillez patienter s&apos;il vous plaît</span>
                 </div>
                 <div className="md:flex md:max-w-screen-md md:mt-5 md:m-auto" id="content">
