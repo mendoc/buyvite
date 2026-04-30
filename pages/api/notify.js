@@ -1,5 +1,4 @@
 import { db } from '../../utils/DB';
-const convert = require('xml-js');
 import axios from 'axios';
 
 export default async function handler(req, res) {
@@ -9,34 +8,43 @@ export default async function handler(req, res) {
         return;
     }
 
-    let infos = req.body;
-    let data = convert.xml2json(infos, { compact: true, spaces: 4 });
+    // Le corps est déjà un objet JSON ou une chaîne JSON
+    const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
-    console.log(data);
+    console.log('Webhook reçu:', JSON.stringify(data, null, 2));
 
-    data = JSON.parse(data);
-    let reponse = data.REPONSE;
-    let status = reponse.STATUT._text;
-    let reference = reponse.REF._text;
+    if (!data.transaction || !data.status) {
+        res.status(400).json({ message: "Format de donnée invalide" });
+        return;
+    }
 
+    const reference = data.transaction.reference;
+    const statusCode = data.status.code; // '200' pour succès
+    const isSuccess = data.status.success === true;
+
+    // Enregistrement des logs
     await db.collection('logs').add({ ...data, date: Date.now() });
 
+    // Mise à jour du paiement
     const snapPayment = await db.collection('payments').where('reference', '==', reference).limit(1).get();
 
     if (!snapPayment.empty) {
-        const refPayment = snapPayment.docs[0].ref;
-        const payment = snapPayment.docs[0].data();
+        const docPayment = snapPayment.docs[0];
+        const payment = docPayment.data();
+        
         const infosUpdate = {
             updated: Date.now(),
-            state: status === '200' ? 'paid' : 'cancel'
-        }
-        await refPayment.update(infosUpdate);
+            state: (isSuccess && statusCode === '200') ? 'paid' : 'cancel'
+        };
+        await docPayment.ref.update(infosUpdate);
 
-        db.collection('users').where('uuid', '==', payment.user).limit(1).get().then(snap => {
-            const user = snap.docs[0].data();
-            axios.post(process.env.EMAIL_URL, { address: user.email }).catch(console.log);
-        }).catch(console.log);
+        // Notification par email
+        const userSnap = await db.collection('users').where('uuid', '==', payment.user).limit(1).get();
+        if (!userSnap.empty) {
+            const user = userSnap.docs[0].data();
+            axios.post(process.env.EMAIL_URL, { address: user.email }).catch(console.error);
+        }
     }
 
-    res.status(200).json(data);
+    res.status(200).json({ status: "success" });
 }

@@ -13,17 +13,19 @@ export default function Create() {
     const [file, setFile] = useState({});
     const [preview, setPreview] = useState('');
     const [cookies, setCookie] = useCookies(['token']);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
+        setMounted(true);
         if (!cookies.token) {
             router.push('/')
         } else {
             setUser(jwt_decode(cookies.token));
         }
-    }, [])
+    }, [cookies.token, router])
 
-    if (!cookies.token) return null;
+    if (!mounted || !cookies.token) return null;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -69,14 +71,16 @@ export default function Create() {
     }
 
     const handleChange = (e) => {
-        let p = product;
-        p[e.target.name] = e.target.value;
-        p.user = user.email;
-        setProduct(p);
+        const { name, value } = e.target;
+        setProduct(prev => ({
+            ...prev,
+            [name]: value,
+            user: user.email
+        }));
     }
 
     return (
-        <div className="px-5">
+        <div className={`px-5 ${processing ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="flex justify-between items-center my-3">
                 <span>BuyVite</span>
                 <div className="flex items-center">
@@ -88,6 +92,11 @@ export default function Create() {
             <div className="mt-5">
                 <h2>Détails du produit</h2>
                 <form className="mt-5" onSubmit={handleSubmit}>
+                    {processing && (
+                        <div className="mb-4 text-blue-900 font-bold animate-pulse text-center">
+                            Génération du lien en cours...
+                        </div>
+                    )}
                     <div className="mt-3">
                         <label className="font-bold text-blue-900">Nom du produit</label>
                         <input name="name" onChange={handleChange} className="border w-full px-2 py-1 outline-none" type="text" placeholder="Ex : Montre en rafia" required />

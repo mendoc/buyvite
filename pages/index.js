@@ -1,9 +1,10 @@
 import React from "react";
-import { GoogleLogin } from 'react-google-login';
+import { GoogleLogin } from '@react-oauth/google';
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
 import { getUserInfos } from "../utils/Request";
 import Head from "next/head";
+import jwt_decode from "jwt-decode";
 
 export default function Home() {
 
@@ -11,16 +12,23 @@ export default function Home() {
     const router = useRouter();
 
     const handleFailure = (response) => {
-        console.log(response);
+        console.log("Login Failed:", response);
     }
 
-    const handleSuccess = (response) => {
-        setCookie('token', response.tokenObj.id_token, { expires: new Date(response.tokenObj.expires_at) });
+    const handleSuccess = (credentialResponse) => {
+        const token = credentialResponse.credential;
+        const profile = jwt_decode(token);
+        
+        // On définit le cookie avec le token JWT
+        const expires = new Date(profile.exp * 1000);
+        setCookie('token', token, { expires });
+
         const infos = {
-            email: response.profileObj.email,
-            photo: response.profileObj.imageUrl,
-            name: response.profileObj.name,
+            email: profile.email,
+            photo: profile.picture,
+            name: profile.name,
         }
+        
         getUserInfos(infos, ((err, res) => {
             if (err) console.dir(err);
             else {
@@ -45,13 +53,10 @@ export default function Home() {
             </Head>
             <div className="flex p-16 text-center h-screen flex-col justify-center items-center">
                 <h1 className="font-bold text-2xl">BuyVite</h1>
-                <p>Connectez-vous à votre compte pour créer des liens de ventes de produits</p>
+                <p className="mb-4">Connectez-vous à votre compte pour créer des liens de ventes de produits</p>
                 <GoogleLogin
-                    clientId='143259310420-lb0ljkai2d166ofkj269ol6spnon5idg.apps.googleusercontent.com'
-                    buttonText="Connectez-vous"
                     onSuccess={handleSuccess}
-                    onFailure={handleFailure}
-                    cookiePolicy={'single_host_origin'}
+                    onError={handleFailure}
                 />
             </div>
         </React.Fragment>

@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: buyvite-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+      - .env:/app/.env
+    environment:
+      - NODE_ENV=development
+      # Permet de passer les variables d'environnement de votre machine au conteneur
+      - SERVICE_ACCOUNT=${SERVICE_ACCOUNT}
+    # Sur certains environnements Docker, Next.js a besoin de polling pour le hot-reload
+    # environment:
+    #   - WATCHPACK_POLLING=true

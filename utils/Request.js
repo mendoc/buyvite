@@ -3,9 +3,13 @@ const payProduct = (number, product, cb) => {
     fetch(`/api/pay`,
         {
             method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({ number, product })
         })
         .then((response) => {
+            console.log("Réponse du paiement:", response);
             response.json().then((data) => {
                 if (response.ok) {
                     cb(null, data);
@@ -13,7 +17,7 @@ const payProduct = (number, product, cb) => {
                     cb(data);
                 }
             }).catch(() => {
-                cb({ message: 'Zut! Impossible de traiter la requête pour le moment' });
+                cb({ message: 'Zut ! Impossible de traiter la requête pour le moment' });
             });
         })
         .catch((error) => {
@@ -26,6 +30,9 @@ const generateLink = (product, cb) => {
     fetch(`/api/generate`,
         {
             method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(product)
         })
         .then((response) => {
@@ -48,6 +55,9 @@ const getUserInfos = (infos, cb) => {
     fetch(`/api/user`,
         {
             method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(infos)
         })
         .then((response) => {

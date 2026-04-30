@@ -3,9 +3,15 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default async function handler(req, res) {
 
-    if (req.method === 'POST') {
+    if (!db) {
+        res.status(500).json({ message: 'Base de données non configurée (SERVICE_ACCOUNT manquant)' });
+        return;
+    }
 
-        let infos = JSON.parse(req.body);
+    if (req.method === 'POST') {
+// ... rest of the code ...
+
+        let infos = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
         if (!infos) {
             res.status(401).json({ message: 'Veuillez renseigner les informations du compte' });

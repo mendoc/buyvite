@@ -10,18 +10,20 @@ import Image from 'next/image';
 export default function User({ products }) {
     const [user, setUser] = useState({});
     const [cookies] = useCookies(['token']);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
+        setMounted(true);
         if (!cookies.token) {
             router.push('/')
         } else {
             const infos = jwt_decode(cookies.token);
             setUser(infos);
         }
-    }, [])
+    }, [cookies.token, router])
 
-    if (!cookies.token) return null;
+    if (!mounted || !cookies.token) return null;
 
     return (
         <main className="md:px-10 px-3">
@@ -42,12 +44,22 @@ export default function User({ products }) {
                 </div>
                 <div className="md:flex flex-wrap justify-start my-5">
                     {products && products.map((prod) => {
-                        const lien = `https://buyvite.netlify.app/product/${prod.reference}`;
+                        const lien = `http://localhost:3000/product/${prod.reference}`;
                         const price = parseInt(prod.price).toLocaleString('fr-FR');
                         return (
                             <div key={prod.reference} className="md:flex flex-col border self-start p-2 md:mr-3 mt-3 rounded max-w-sm">
                                 <span className="mt-3 mb-2 font-bold text-md">{prod.name}</span>
-                                <Image className="rounded" src={prod.image} alt="Picture of the author" width={500} height={192} objectFit="cover" />
+                                <Image 
+                                    className="rounded" 
+                                    src={prod.image} 
+                                    alt={prod.name} 
+                                    width={500} 
+                                    height={192} 
+                                    objectFit="cover"
+                                    onError={(e) => {
+                                        e.target.src = "https://via.placeholder.com/500x192?text=Image+non+disponible";
+                                    }}
+                                />
                                 <div className="flex flex-col justify-start items-start mt-2">
                                     <span className="font-bold">{price} F CFA</span>
                                     <ShareButton lien={lien} />

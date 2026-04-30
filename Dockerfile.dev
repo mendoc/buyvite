@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# On copie package.json et yarn.lock pour profiter du cache Docker
+COPY package.json yarn.lock ./
+
+# Installation des dépendances avec yarn
+RUN yarn install
+
+# Copie du reste des fichiers
+COPY . .
+
+EXPOSE 3000
+
+# Commande de lancement avec hot-reload (géré par next dev)
+CMD ["yarn", "dev"]
