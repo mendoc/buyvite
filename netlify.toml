@@ -1,2 +1,2 @@
 [build]
-  command = "yarn build"
+  command = "yarn build && npm install --platform=linux --arch=x64 sharp"
