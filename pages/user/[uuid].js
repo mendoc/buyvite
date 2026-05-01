@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { db } from '../../utils/DB'
 import ShareButton from '../../components/ShareButton';
-import Image from 'next/image';
 
 export default function User({ products }) {
     const [user, setUser] = useState({});
@@ -49,15 +48,13 @@ export default function User({ products }) {
                         return (
                             <div key={prod.reference} className="md:flex flex-col border self-start p-2 md:mr-3 mt-3 rounded max-w-sm">
                                 <span className="mt-3 mb-2 font-bold text-md">{prod.name}</span>
-                                <Image 
-                                    className="rounded" 
+                                <img 
+                                    className="rounded w-full h-48 object-cover" 
                                     src={prod.image} 
                                     alt={prod.name} 
-                                    width={500} 
-                                    height={192} 
-                                    objectFit="cover"
                                     onError={(e) => {
                                         e.target.src = "https://via.placeholder.com/500x192?text=Image+non+disponible";
+                                        e.target.onerror = null;
                                     }}
                                 />
                                 <div className="flex flex-col justify-start items-start mt-2">

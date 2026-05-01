@@ -3,7 +3,6 @@ import { payProduct } from '../../utils/Request';
 import { db } from '../../utils/DB';
 import fb from '../../utils/fb';
 import Head from "next/head";
-import Image from "next/image";
 
 export default function Product({ product }) {
     const [processing, setProcessing] = useState(false);
@@ -127,18 +126,17 @@ export default function Product({ product }) {
                 </div>
                 <div className="md:flex md:max-w-screen-md md:mt-5 md:m-auto" id="content">
                     <header className="bg-gray-200 py-4 md:w-1/2">
-                        <Image
-                            className="h-64 md:h-auto md:w-full m-auto rounded"
+                        <img 
+                            className="h-64 md:h-auto md:w-full m-auto rounded object-cover"
                             src={product.image}
                             alt="Image du produit"
-                            width={400}
-                            height={400}
                             onError={(e) => {
                                 e.target.src = "https://via.placeholder.com/400x400?text=Image+non+disponible";
                                 e.target.onerror = null;
                             }}
                         />
                     </header>
+
                     <main className="p-5 pt-2 md:w-1/2">
                         <span className="inline-block pt-2 pb-1 px-2 text-lg font-bold bg-gray-400 rounded my-2">{parseInt(product.price).toLocaleString('fr-FR')} F CFA</span>
                         <h1 className="font-bold text-2xl">{product.name}</h1>
