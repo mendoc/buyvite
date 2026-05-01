@@ -6,7 +6,8 @@
     "dev": "next dev",
     "start": "next start",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npm rebuild --platform=linux --arch=x64 sharp"
   },
   "repository": {
     "type": "git",
